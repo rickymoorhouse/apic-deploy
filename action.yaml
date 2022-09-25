@@ -48,7 +48,7 @@ runs:
   - name: Validate product
     shell: bash
     run: |
-      ./apic-slim validate ${{ inputs.product-file }}
+      ./apic-slim --accept-license --live-help validate ${{ inputs.product-file }}
 
   - name: Login to API Manager with provided credentials
     shell: bash
@@ -65,13 +65,12 @@ runs:
       fi
       if [[ "${{ inputs.apikey }}" != "" ]]; then
         echo "Using apikey"
-        ./apic-slim login --accept-license --live-help --server ${{ inputs.api-host }} --sso --apiKey ${{ inputs.apikey }} --context provider
+        ./apic-slim login --server ${{ inputs.api-host }} --sso --apiKey ${{ inputs.apikey }} --context provider
       fi
       if [[ "${{ inputs.username }}" != "" ]]; then
         echo "Using username/password"
-        ./apic-slim login --accept-license --live-help --server ${{ inputs.api-host }} --username ${{ inputs.username }} --password ${{ inputs.password }} --realm ${{ inputs.realm }}
+        ./apic-slim login --server ${{ inputs.api-host }} --username ${{ inputs.username }} --password ${{ inputs.password }} --realm ${{ inputs.realm }}
       fi
-      ./apic-slim orgs --accept-license --live-help --my --server ${{ inputs.api-host }}
 
   - name: Publish product with apic CLI
     if: ${{ github.event_name != 'pull_request' }}
