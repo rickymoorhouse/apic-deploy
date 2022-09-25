@@ -56,7 +56,7 @@ runs:
 
   - name: Login to API Manager with provided credentials
     shell: bash
-    if: ${{ validate_only == false }}
+    if: ${{ inputs.validate_only == false }}
     run: |
       if [[ "${{ inputs.iam-apikey }}" != "" ]]; then
         echo "Using IAM API Key"
@@ -77,7 +77,7 @@ runs:
       fi
 
   - name: Publish product with apic CLI
-    if: ${{ validate_only == false }}
+    if: ${{ inputs.validate_only == false }}
     shell: bash
     run: |
       ./apic-slim products:publish --server ${{ inputs.api-host }} --org ${{ inputs.provider-org }} --catalog ${{ inputs.catalog }} --migrate_subscriptions ${{ inputs.product-file }}
