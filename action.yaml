@@ -45,8 +45,14 @@ runs:
       echo "Unpacking linux toolkit"
       tar -zxf toolkit-linux.tgz
 
+  - name: Validate product
+    shell: bash
+    run: |
+      ./apic-slim validate ${{ inputs.product-file }}
+
   - name: Login to API Manager with provided credentials
     shell: bash
+    if: ${{ github.event_name != 'pull_request' }}
     run: |
       if [[ "${{ inputs.iam-apikey }}" != "" ]]; then
         echo "Using IAM API Key"
@@ -65,18 +71,10 @@ runs:
         echo "Using username/password"
         ./apic-slim login --accept-license --live-help --server ${{ inputs.api-host }} --username ${{ inputs.username }} --password ${{ inputs.password }} --realm ${{ inputs.realm }}
       fi
-
-  - name: List orgs with apic CLI
-    shell: bash
-    run: |
       ./apic-slim orgs --accept-license --live-help --my --server ${{ inputs.api-host }}
 
-  - name: Validate product
-    shell: bash
-    run: |
-      ./apic-slim validate ${{ inputs.product-file }}
-
   - name: Publish product with apic CLI
+    if: ${{ github.event_name != 'pull_request' }}
     shell: bash
     run: |
       ./apic-slim products:publish --server ${{ inputs.api-host }} --org ${{ inputs.provider-org }} --catalog ${{ inputs.catalog }} --migrate-subscriptions ${{ inputs.product-file }}
