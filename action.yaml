@@ -33,6 +33,10 @@ inputs:
     description: 'File name of product yaml to publish'
     required: true
     default: 'product.yaml'
+  validate_only:
+    description: "Only validate API content"
+    required: true
+    default: false
 runs:
   using: "composite"
   steps:
@@ -52,7 +56,7 @@ runs:
 
   - name: Login to API Manager with provided credentials
     shell: bash
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ validate_only == false }}
     run: |
       if [[ "${{ inputs.iam-apikey }}" != "" ]]; then
         echo "Using IAM API Key"
@@ -73,7 +77,7 @@ runs:
       fi
 
   - name: Publish product with apic CLI
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ validate_only == false }}
     shell: bash
     run: |
-      ./apic-slim products:publish --server ${{ inputs.api-host }} --org ${{ inputs.provider-org }} --catalog ${{ inputs.catalog }} --migrate-subscriptions ${{ inputs.product-file }}
+      ./apic-slim products:publish --server ${{ inputs.api-host }} --org ${{ inputs.provider-org }} --catalog ${{ inputs.catalog }} --migrate_subscriptions ${{ inputs.product-file }}
